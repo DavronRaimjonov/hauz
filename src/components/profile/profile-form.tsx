@@ -1,11 +1,12 @@
-import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 
 import type { PersonalAccount } from '@/@types/personal-account'
 import type { ProfileFormValues } from '@/@types/profile'
+import { FormError } from '@/components/form/form-error'
+import { FormField } from '@/components/form/form-field'
+import { SubmitButton } from '@/components/form/submit-button'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { fieldErrors } from '@/lib/form'
 import { profileUpdateSchema } from '@/lib/personal-account'
@@ -85,7 +86,7 @@ export function ProfileForm({
   return (
     <form className="grid gap-5" onSubmit={onSubmit} noValidate>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="First name" id="firstName" error={errors.firstName}>
+        <FormField label="First name" id="firstName" error={errors.firstName}>
           <Input
             id="firstName"
             autoComplete="given-name"
@@ -93,8 +94,8 @@ export function ProfileForm({
             aria-invalid={!!errors.firstName}
             onChange={set('firstName')}
           />
-        </Field>
-        <Field label="Last name" id="lastName" error={errors.lastName}>
+        </FormField>
+        <FormField label="Last name" id="lastName" error={errors.lastName}>
           <Input
             id="lastName"
             autoComplete="family-name"
@@ -102,10 +103,10 @@ export function ProfileForm({
             aria-invalid={!!errors.lastName}
             onChange={set('lastName')}
           />
-        </Field>
+        </FormField>
       </div>
 
-      <Field
+      <FormField
         label="Contact email"
         id="contactEmail"
         hint="Optional. Where buyers and renters can reach you."
@@ -119,9 +120,9 @@ export function ProfileForm({
           aria-invalid={!!errors.contactEmail}
           onChange={set('contactEmail')}
         />
-      </Field>
+      </FormField>
 
-      <Field
+      <FormField
         label="Bio"
         id="bio"
         hint="Optional. Up to 2000 characters."
@@ -135,15 +136,14 @@ export function ProfileForm({
           aria-invalid={!!errors.bio}
           onChange={set('bio')}
         />
-      </Field>
+      </FormField>
 
-      {formError && <p className="text-sm text-destructive">{formError}</p>}
+      <FormError message={formError} />
 
       <div className="flex items-center gap-3">
-        <Button type="submit" disabled={!dirty || save.isPending}>
-          {save.isPending && <Loader2 className="animate-spin" />}
+        <SubmitButton pending={save.isPending} disabled={!dirty}>
           Save changes
-        </Button>
+        </SubmitButton>
         {dirty && !save.isPending && (
           <Button
             type="button"
@@ -161,31 +161,5 @@ export function ProfileForm({
         )}
       </div>
     </form>
-  )
-}
-
-function Field({
-  label,
-  id,
-  hint,
-  error,
-  children,
-}: {
-  label: string
-  id: string
-  hint?: string
-  error?: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="grid gap-2">
-      <Label htmlFor={id}>{label}</Label>
-      {children}
-      {error ? (
-        <p className="text-sm text-destructive">{error}</p>
-      ) : (
-        hint && <p className="text-sm text-muted-foreground">{hint}</p>
-      )}
-    </div>
   )
 }

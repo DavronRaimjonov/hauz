@@ -1,14 +1,7 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { z } from 'zod'
 
-import { OnboardingForm } from '@/components/onboarding/onboarding-form'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { OnboardingCard } from '@/components/onboarding/onboarding-card'
 import { safeRedirect } from '@/lib/redirect'
 
 export const Route = createFileRoute('/onboarding')({
@@ -30,17 +23,7 @@ export const Route = createFileRoute('/onboarding')({
 function Onboarding() {
   return (
     <main className="mx-auto flex max-w-lg justify-center px-4 py-12">
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="text-xl">Welcome to HAUZ</CardTitle>
-          <CardDescription>
-            Tell us a little about yourself to finish setting up your account.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <OnboardingForm />
-        </CardContent>
-      </Card>
+      <OnboardingCard />
     </main>
   )
 }

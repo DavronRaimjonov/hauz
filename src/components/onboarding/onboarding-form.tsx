@@ -1,16 +1,22 @@
-import { Loader2 } from 'lucide-react'
 import { useRef, useState } from 'react'
 
-import { Button } from '@/components/ui/button'
+import type { Role } from '@/@types/personal-account'
+import { FormError } from '@/components/form/form-error'
+import { FormField } from '@/components/form/form-field'
+import { SubmitButton } from '@/components/form/submit-button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { fieldErrors } from '@/lib/form'
-import { ROLES, ROLE_LABELS, onboardingSchema } from '@/lib/personal-account'
+import { onboardingSchema } from '@/lib/personal-account'
 import { useCreatePersonalAccountMutation } from '@/server/mutation'
 
+import { RolePicker } from './role-picker'
+
 export function OnboardingForm() {
-  const [values, setValues] = useState({ firstName: '', lastName: '', role: '' })
+  const [values, setValues] = useState({
+    firstName: '',
+    lastName: '',
+    role: '' as Role | '',
+  })
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const submitting = useRef(false)
@@ -45,8 +51,7 @@ export function OnboardingForm() {
   return (
     <form className="grid gap-5" onSubmit={onSubmit} noValidate>
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="grid gap-2">
-          <Label htmlFor="firstName">First name</Label>
+        <FormField label="First name" id="firstName" error={errors.firstName}>
           <Input
             id="firstName"
             autoComplete="given-name"
@@ -57,12 +62,8 @@ export function OnboardingForm() {
               setValues({ ...values, firstName: event.target.value })
             }
           />
-          {errors.firstName && (
-            <p className="text-sm text-destructive">{errors.firstName}</p>
-          )}
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="lastName">Last name</Label>
+        </FormField>
+        <FormField label="Last name" id="lastName" error={errors.lastName}>
           <Input
             id="lastName"
             autoComplete="family-name"
@@ -72,45 +73,24 @@ export function OnboardingForm() {
               setValues({ ...values, lastName: event.target.value })
             }
           />
-          {errors.lastName && (
-            <p className="text-sm text-destructive">{errors.lastName}</p>
-          )}
-        </div>
+        </FormField>
       </div>
 
-      <div className="grid gap-2">
-        <Label>I am a</Label>
-        <RadioGroup
-          className="grid gap-3 sm:grid-cols-2"
+      <FormField
+        label="I am a"
+        hint="This cannot be changed later."
+        error={errors.role}
+      >
+        <RolePicker
           value={values.role}
-          onValueChange={(role) => setValues({ ...values, role })}
-          aria-invalid={!!errors.role}
-        >
-          {ROLES.map((role) => (
-            <Label
-              key={role}
-              htmlFor={`role-${role}`}
-              className="flex cursor-pointer items-center gap-3 rounded-lg border p-4 font-normal has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-accent"
-            >
-              <RadioGroupItem id={`role-${role}`} value={role} />
-              {ROLE_LABELS[role]}
-            </Label>
-          ))}
-        </RadioGroup>
-        <p className="text-sm text-muted-foreground">
-          This cannot be changed later.
-        </p>
-        {errors.role && (
-          <p className="text-sm text-destructive">{errors.role}</p>
-        )}
-      </div>
+          invalid={!!errors.role}
+          onChange={(role) => setValues({ ...values, role })}
+        />
+      </FormField>
 
-      {formError && <p className="text-sm text-destructive">{formError}</p>}
+      <FormError message={formError} />
 
-      <Button type="submit" disabled={create.isPending}>
-        {create.isPending && <Loader2 className="animate-spin" />}
-        Continue
-      </Button>
+      <SubmitButton pending={create.isPending}>Continue</SubmitButton>
     </form>
   )
 }
