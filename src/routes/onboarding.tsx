@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
 import { z } from 'zod'
 
+import type { PersonalAccount } from '@/@types/personal-account'
 import { OnboardingForm } from '@/components/onboarding/onboarding-form'
 import {
   Card,
@@ -11,7 +12,6 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { cachePersonalAccount } from '@/lib/auth'
-import type { PersonalAccount } from '@/lib/personal-account'
 import { safeRedirect } from '@/lib/redirect'
 
 export const Route = createFileRoute('/onboarding')({

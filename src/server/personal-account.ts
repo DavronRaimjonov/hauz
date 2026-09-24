@@ -1,15 +1,15 @@
 import { createServerFn } from '@tanstack/react-start'
 import { AppwriteException, ExecutionMethod } from 'node-appwrite'
 
-import {
-  onboardingSchema,
-  profileUpdateSchema,
-  type PersonalAccount,
-} from '@/lib/personal-account'
+import type { FunctionResponse } from '@/@types/appwrite'
+import type {
+  PersonalAccount,
+  PersonalAccountLookup,
+  PersonalAccountResult,
+} from '@/@types/personal-account'
+import { onboardingSchema, profileUpdateSchema } from '@/lib/personal-account'
 
 import { FUNCTION_ID, createSessionClient, getSessionSecret } from './appwrite'
-
-type FunctionResponse = { status: number; body: unknown }
 
 async function callFunction(
   method: ExecutionMethod,
@@ -50,11 +50,6 @@ function errorMessage(body: unknown) {
   return 'Something went wrong. Please try again.'
 }
 
-export type PersonalAccountLookup =
-  | { status: 'found'; account: PersonalAccount }
-  | { status: 'missing' }
-  | { status: 'unavailable' }
-
 export const getPersonalAccount = createServerFn({ method: 'GET' }).handler(
   async (): Promise<PersonalAccountLookup> => {
     try {
@@ -76,11 +71,10 @@ export const getPersonalAccount = createServerFn({ method: 'GET' }).handler(
   },
 )
 
-type Result =
-  | { ok: true; account: PersonalAccount }
-  | { ok: false; message: string }
-
-async function send(method: ExecutionMethod, body: unknown): Promise<Result> {
+async function send(
+  method: ExecutionMethod,
+  body: unknown,
+): Promise<PersonalAccountResult> {
   try {
     const response = await callFunction(method, body)
 

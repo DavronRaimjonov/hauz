@@ -2,18 +2,16 @@ import { useMutation } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { useRef, useState } from 'react'
 
+import type {
+  OnboardingInput,
+  PersonalAccount,
+} from '@/@types/personal-account'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { fieldErrors } from '@/lib/form'
-import {
-  ROLES,
-  ROLE_LABELS,
-  onboardingSchema,
-  type OnboardingInput,
-  type PersonalAccount,
-} from '@/lib/personal-account'
+import { ROLES, ROLE_LABELS, onboardingSchema } from '@/lib/personal-account'
 import { createPersonalAccount } from '@/server/personal-account'
 
 export function OnboardingForm({

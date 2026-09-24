@@ -1,11 +1,11 @@
 import { queryOptions, type QueryClient } from '@tanstack/react-query'
 
-import type { PersonalAccount } from '@/lib/personal-account'
+import type {
+  PersonalAccount,
+  PersonalAccountLookup,
+} from '@/@types/personal-account'
 import { getCurrentUser } from '@/server/auth'
-import {
-  getPersonalAccount,
-  type PersonalAccountLookup,
-} from '@/server/personal-account'
+import { getPersonalAccount } from '@/server/personal-account'
 
 export const currentUserQuery = queryOptions({
   queryKey: ['current-user'],

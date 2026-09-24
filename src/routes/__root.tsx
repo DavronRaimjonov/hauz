@@ -1,4 +1,3 @@
-import type { QueryClient } from '@tanstack/react-query'
 import {
   HeadContent,
   Scripts,
@@ -6,14 +5,11 @@ import {
   redirect,
 } from '@tanstack/react-router'
 
+import type { RouterContext } from '@/@types/router'
 import { SiteHeader } from '@/components/layout/site-header'
 import { currentUserQuery, personalAccountQuery } from '@/lib/auth'
 
 import appCss from '../styles.css?url'
-
-export interface RouterContext {
-  queryClient: QueryClient
-}
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   // Resolved on the server for the first request, so the page (and the

@@ -2,6 +2,8 @@ import { createServerFn } from '@tanstack/react-start'
 import { AppwriteException, ID } from 'node-appwrite'
 import { z } from 'zod'
 
+import type { AuthResult, CurrentUser } from '@/@types/auth'
+
 import {
   clearSessionCookie,
   createAdminClient,
@@ -11,16 +13,9 @@ import {
 } from './appwrite'
 import { recordFailedAttempt, resetAttempts, tooManyAttempts } from './attempts'
 
-export type CurrentUser = {
-  id: string
-  email: string
-}
-
-type Result<T = void> = { ok: true; data: T } | { ok: false; message: string }
-
 export const requestEmailCode = createServerFn({ method: 'POST' })
   .validator(z.object({ email: z.email() }))
-  .handler(async ({ data }): Promise<Result<{ userId: string }>> => {
+  .handler(async ({ data }): Promise<AuthResult<{ userId: string }>> => {
     const { account } = createAdminClient()
 
     try {
@@ -47,7 +42,7 @@ export const verifyEmailCode = createServerFn({ method: 'POST' })
       code: z.string().regex(/^\d{6}$/),
     }),
   )
-  .handler(async ({ data }): Promise<Result> => {
+  .handler(async ({ data }): Promise<AuthResult> => {
     if (tooManyAttempts(data.userId)) {
       return {
         ok: false,

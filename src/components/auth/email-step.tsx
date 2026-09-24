@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 
+import type { PendingSignIn } from '@/@types/auth'
 import { Button } from '@/components/ui/button'
 import {
   CardContent,
@@ -12,9 +13,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { requestEmailCode } from '@/server/auth'
-
-/** A code has been sent; the code step needs both to finish signing in. */
-export type PendingSignIn = { email: string; userId: string }
 
 export function EmailStep({
   onSent,

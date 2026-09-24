@@ -5,23 +5,13 @@
  */
 import { z } from 'zod'
 
-export const ROLES = ['property_owner', 'realtor'] as const
-export type Role = (typeof ROLES)[number]
+import type { Role } from '@/@types/personal-account'
+
+export const ROLES = ['property_owner', 'realtor'] as const satisfies Role[]
 
 export const ROLE_LABELS: Record<Role, string> = {
   property_owner: 'Property Owner',
   realtor: 'Realtor',
-}
-
-export type PersonalAccount = {
-  personalAccountId: string
-  firstName: string
-  lastName: string
-  role: Role
-  contactEmail: string | null
-  bio: string | null
-  createdAt: string
-  updatedAt: string
 }
 
 const name = z.string().trim().min(1, 'Required').max(100)
@@ -31,7 +21,6 @@ export const onboardingSchema = z.object({
   lastName: name,
   role: z.enum(ROLES, 'Choose a role'),
 })
-export type OnboardingInput = z.infer<typeof onboardingSchema>
 
 /**
  * A partial edit. A field left out keeps its stored value and null clears it.
@@ -46,4 +35,3 @@ export const profileUpdateSchema = z
     bio: z.string().trim().min(1).max(2000).nullable().optional(),
   })
   .refine((fields) => Object.keys(fields).length > 0, 'Nothing to update')
-export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>

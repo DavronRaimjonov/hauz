@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
 
+import type { PersonalAccount } from '@/@types/personal-account'
 import { ProfileForm } from '@/components/profile/profile-form'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -12,7 +13,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { cachePersonalAccount, personalAccountQuery } from '@/lib/auth'
-import { ROLE_LABELS, type PersonalAccount } from '@/lib/personal-account'
+import { ROLE_LABELS } from '@/lib/personal-account'
 
 export const Route = createFileRoute('/profile')({
   beforeLoad: ({ context, location }) => {

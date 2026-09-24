@@ -3,6 +3,7 @@ import { REGEXP_ONLY_DIGITS } from 'input-otp'
 import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 
+import type { PendingSignIn } from '@/@types/auth'
 import { Button } from '@/components/ui/button'
 import {
   CardContent,
@@ -17,8 +18,6 @@ import {
 } from '@/components/ui/input-otp'
 import { Label } from '@/components/ui/label'
 import { requestEmailCode, verifyEmailCode } from '@/server/auth'
-
-import type { PendingSignIn } from './email-step'
 
 export function CodeStep({
   pending: { email, userId },

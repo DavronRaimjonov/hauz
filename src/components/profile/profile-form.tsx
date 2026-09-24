@@ -2,26 +2,20 @@ import { useMutation } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 
+import type {
+  PersonalAccount,
+  ProfileUpdateInput,
+} from '@/@types/personal-account'
+import type { ProfileFormValues } from '@/@types/profile'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { fieldErrors } from '@/lib/form'
-import {
-  profileUpdateSchema,
-  type PersonalAccount,
-  type ProfileUpdateInput,
-} from '@/lib/personal-account'
+import { profileUpdateSchema } from '@/lib/personal-account'
 import { updatePersonalAccount } from '@/server/personal-account'
 
-type Values = {
-  firstName: string
-  lastName: string
-  contactEmail: string
-  bio: string
-}
-
-function toValues(account: PersonalAccount): Values {
+function toValues(account: PersonalAccount): ProfileFormValues {
   return {
     firstName: account.firstName,
     lastName: account.lastName,
@@ -30,7 +24,7 @@ function toValues(account: PersonalAccount): Values {
   }
 }
 
-function changes(account: PersonalAccount, values: Values) {
+function changes(account: PersonalAccount, values: ProfileFormValues) {
   const next = {
     firstName: values.firstName.trim(),
     lastName: values.lastName.trim(),
@@ -90,7 +84,7 @@ export function ProfileForm({
     save.mutate(parsed.data)
   }
 
-  const set = (field: keyof Values) =>
+  const set = (field: keyof ProfileFormValues) =>
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setValues({ ...values, [field]: event.target.value })
       save.reset()
