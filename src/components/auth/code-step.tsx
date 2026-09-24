@@ -1,4 +1,3 @@
-import { useMutation } from '@tanstack/react-query'
 import { REGEXP_ONLY_DIGITS } from 'input-otp'
 import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
@@ -17,34 +16,22 @@ import {
   InputOTPSlot,
 } from '@/components/ui/input-otp'
 import { Label } from '@/components/ui/label'
-import { requestEmailCode, verifyEmailCode } from '@/server/auth'
+import {
+  useRequestCodeMutation,
+  useVerifyCodeMutation,
+} from '@/server/mutation'
 
 export function CodeStep({
   pending: { email, userId },
-  onSignedIn,
   onChangeEmail,
 }: {
   pending: PendingSignIn
-  /** Called once the session cookie is set. */
-  onSignedIn: () => Promise<void>
   onChangeEmail: () => void
 }) {
   const [code, setCode] = useState('')
 
-  const verify = useMutation({
-    mutationFn: (code: string) => verifyEmailCode({ data: { userId, code } }),
-    onSuccess: async (result) => {
-      if (result.ok) {
-        await onSignedIn()
-      } else {
-        setCode('')
-      }
-    },
-  })
-
-  const resend = useMutation({
-    mutationFn: () => requestEmailCode({ data: { email } }),
-  })
+  const verify = useVerifyCodeMutation()
+  const resend = useRequestCodeMutation()
 
   const error =
     verify.data?.ok === false
@@ -56,7 +43,14 @@ export function CodeStep({
 
   const submit = (value: string) => {
     if (value.length === 6 && !verify.isPending) {
-      verify.mutate(value)
+      verify.mutate(
+        { userId, code: value },
+        {
+          onSuccess(result) {
+            if (!result.ok) setCode('')
+          },
+        },
+      )
     }
   }
 
@@ -119,7 +113,7 @@ export function CodeStep({
               type="button"
               className="text-muted-foreground underline-offset-4 hover:underline disabled:opacity-50"
               disabled={resend.isPending}
-              onClick={() => resend.mutate()}
+              onClick={() => resend.mutate(email)}
             >
               Resend code
             </button>

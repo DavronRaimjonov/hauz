@@ -1,4 +1,3 @@
-import { useMutation } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -12,7 +11,7 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { requestEmailCode } from '@/server/auth'
+import { useRequestCodeMutation } from '@/server/mutation'
 
 export function EmailStep({
   onSent,
@@ -21,14 +20,7 @@ export function EmailStep({
 }) {
   const [email, setEmail] = useState('')
 
-  const send = useMutation({
-    mutationFn: (email: string) => requestEmailCode({ data: { email } }),
-    onSuccess: (result, email) => {
-      if (result.ok) {
-        onSent({ email, userId: result.data.userId })
-      }
-    },
-  })
+  const send = useRequestCodeMutation()
 
   const error =
     send.data?.ok === false
@@ -48,7 +40,12 @@ export function EmailStep({
           className="grid gap-4"
           onSubmit={(event) => {
             event.preventDefault()
-            send.mutate(email.trim())
+            const value = email.trim()
+            send.mutate(value, {
+              onSuccess(result) {
+                if (result.ok) onSent({ email: value, userId: result.data.userId })
+              },
+            })
           }}
         >
           <div className="grid gap-2">

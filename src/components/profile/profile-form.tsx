@@ -1,11 +1,7 @@
-import { useMutation } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 
-import type {
-  PersonalAccount,
-  ProfileUpdateInput,
-} from '@/@types/personal-account'
+import type { PersonalAccount } from '@/@types/personal-account'
 import type { ProfileFormValues } from '@/@types/profile'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { fieldErrors } from '@/lib/form'
 import { profileUpdateSchema } from '@/lib/personal-account'
-import { updatePersonalAccount } from '@/server/personal-account'
+import { useUpdateProfileMutation } from '@/server/mutation'
 
 function toValues(account: PersonalAccount): ProfileFormValues {
   return {
@@ -44,26 +40,13 @@ function changes(account: PersonalAccount, values: ProfileFormValues) {
 
 export function ProfileForm({
   account,
-  onSaved,
 }: {
   account: PersonalAccount
-  onSaved: (account: PersonalAccount) => Promise<void>
 }) {
   const [values, setValues] = useState(() => toValues(account))
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const save = useMutation({
-    mutationFn: (input: ProfileUpdateInput) =>
-      updatePersonalAccount({ data: input }),
-    onSuccess: async (result) => {
-      if (result.ok) {
-        // Show what was stored (trimmed, cleared fields empty), not what
-        // was typed.
-        setValues(toValues(result.account))
-        await onSaved(result.account)
-      }
-    },
-  })
+  const save = useUpdateProfileMutation()
 
   const update = changes(account, values)
   const dirty = Object.keys(update).length > 0
@@ -81,7 +64,11 @@ export function ProfileForm({
     }
 
     setErrors({})
-    save.mutate(parsed.data)
+    save.mutate(parsed.data, {
+      onSuccess(result) {
+        if (result.ok) setValues(toValues(result.account))
+      },
+    })
   }
 
   const set = (field: keyof ProfileFormValues) =>

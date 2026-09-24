@@ -1,7 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
 
-import type { PersonalAccount } from '@/@types/personal-account'
 import { ProfileForm } from '@/components/profile/profile-form'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -12,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { cachePersonalAccount, personalAccountQuery } from '@/lib/auth'
+import { personalAccountQuery } from '@/lib/auth'
 import { ROLE_LABELS } from '@/lib/personal-account'
 
 export const Route = createFileRoute('/profile')({
@@ -57,12 +56,6 @@ function Profile() {
     )
   }
 
-  const onSaved = async (saved: PersonalAccount) => {
-    cachePersonalAccount(queryClient, user.id, saved)
-    // Re-run the route context so the header shows a changed first name.
-    await router.invalidate()
-  }
-
   const profile = account.account
 
   return (
@@ -85,7 +78,7 @@ function Profile() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ProfileForm account={profile} onSaved={onSaved} />
+          <ProfileForm account={profile} />
         </CardContent>
       </Card>
     </main>

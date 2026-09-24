@@ -1,8 +1,6 @@
-import { useQueryClient } from '@tanstack/react-query'
-import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { z } from 'zod'
 
-import type { PersonalAccount } from '@/@types/personal-account'
 import { OnboardingForm } from '@/components/onboarding/onboarding-form'
 import {
   Card,
@@ -11,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { cachePersonalAccount } from '@/lib/auth'
 import { safeRedirect } from '@/lib/redirect'
 
 export const Route = createFileRoute('/onboarding')({
@@ -31,16 +28,6 @@ export const Route = createFileRoute('/onboarding')({
 })
 
 function Onboarding() {
-  const router = useRouter()
-  const queryClient = useQueryClient()
-  const { user } = Route.useRouteContext()
-  const search = Route.useSearch()
-
-  const onCreated = async (account: PersonalAccount) => {
-    cachePersonalAccount(queryClient, user.id, account)
-    await router.navigate({ href: safeRedirect(search.redirect), replace: true })
-  }
-
   return (
     <main className="mx-auto flex max-w-lg justify-center px-4 py-12">
       <Card className="w-full">
@@ -51,7 +38,7 @@ function Onboarding() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <OnboardingForm onCreated={onCreated} />
+          <OnboardingForm />
         </CardContent>
       </Card>
     </main>

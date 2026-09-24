@@ -1,14 +1,8 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import {
-  Link,
-  useRouteContext,
-  useRouter,
-  useRouterState,
-} from '@tanstack/react-router'
+import { Link, useRouteContext, useRouterState } from '@tanstack/react-router'
 import { Loader2 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { logout } from '@/server/auth'
+import { useLogoutMutation } from '@/server/mutation'
 
 /**
  * Reads the user from the root route context, which the server fills before
@@ -52,17 +46,7 @@ export function SiteHeader() {
 }
 
 function LogoutButton() {
-  const router = useRouter()
-  const queryClient = useQueryClient()
-
-  const logOut = useMutation({
-    mutationFn: () => logout(),
-    onSuccess: async () => {
-      // Nothing cached for the old user may outlive the session.
-      queryClient.clear()
-      await router.navigate({ to: '/' })
-    },
-  })
+  const logOut = useLogoutMutation()
 
   return (
     <Button

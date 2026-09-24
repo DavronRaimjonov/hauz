@@ -1,44 +1,20 @@
-import { useMutation } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { useRef, useState } from 'react'
 
-import type {
-  OnboardingInput,
-  PersonalAccount,
-} from '@/@types/personal-account'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { fieldErrors } from '@/lib/form'
 import { ROLES, ROLE_LABELS, onboardingSchema } from '@/lib/personal-account'
-import { createPersonalAccount } from '@/server/personal-account'
+import { useCreatePersonalAccountMutation } from '@/server/mutation'
 
-export function OnboardingForm({
-  onCreated,
-}: {
-  onCreated: (account: PersonalAccount) => Promise<void>
-}) {
+export function OnboardingForm() {
   const [values, setValues] = useState({ firstName: '', lastName: '', role: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  // Two clicks can land before React re-renders with isPending, so the guard
-  // is a ref that flips synchronously. The Function is also safe against a
-  // duplicate create; this just avoids sending one.
   const submitting = useRef(false)
-
-  const create = useMutation({
-    mutationFn: (input: OnboardingInput) =>
-      createPersonalAccount({ data: input }),
-    onSuccess: async (result) => {
-      if (result.ok) {
-        await onCreated(result.account)
-      }
-    },
-    onSettled: () => {
-      submitting.current = false
-    },
-  })
+  const create = useCreatePersonalAccountMutation()
 
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault()
@@ -54,7 +30,11 @@ export function OnboardingForm({
 
     setErrors({})
     submitting.current = true
-    create.mutate(parsed.data)
+    create.mutate(parsed.data, {
+      onSettled() {
+        submitting.current = false
+      },
+    })
   }
 
   const formError =
